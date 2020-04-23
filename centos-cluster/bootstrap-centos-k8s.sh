@@ -5,13 +5,13 @@
 
 # Install docker from Docker-ce repository
 echo "[TASK 1] Install docker container engine"
-yum install -y -q yum-utils device-mapper-persistent-data lvm2 > /dev/null 2>&1
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo > /dev/null 2>&1
-yum install -y -q docker-ce-19.03.5 >/dev/null 2>&1
+yum install -y -q yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install -y -q docker-ce-19.03.5
 
 # Enable docker service
 echo "[TASK 2] Enable and start docker service"
-systemctl enable docker >/dev/null 2>&1
+systemctl enable docker
 systemctl start docker
 
 # Add yum repo file for Kubernetes
@@ -29,28 +29,28 @@ EOF
 
 # Install Kubernetes
 echo "[TASK 4] Install Kubernetes (kubeadm, kubelet and kubectl)"
-yum install -y -q kubeadm-1.17.1 kubelet-1.17.1 kubectl-1.17.1 >/dev/null 2>&1
+yum install -y -q kubeadm-1.17.1 kubelet-1.17.1 kubectl-1.17.1
 
 # Start and Enable kubelet service
 echo "[TASK 5] Enable and start kubelet service"
-systemctl enable kubelet >/dev/null 2>&1
+systemctl enable kubelet
 echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/sysconfig/kubelet
-systemctl start kubelet >/dev/null 2>&1
+systemctl start kubelet
 
 # Install Openssh server
 echo "[TASK 6] Install and configure ssh"
-yum install -y -q openssh-server >/dev/null 2>&1
+yum install -y -q openssh-server
 sed -i 's/.*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-systemctl enable sshd >/dev/null 2>&1
-systemctl start sshd >/dev/null 2>&1
+systemctl enable sshd
+systemctl start sshd
 
 # Set Root password
 echo "[TASK 7] Set root password"
-echo "kubeadmin" | passwd --stdin root >/dev/null 2>&1
+echo "kubeadmin" | passwd --stdin root
 
 # Install additional required packages
 echo "[TASK 8] Install additional packages"
-yum install -y -q which net-tools sudo sshpass less >/dev/null 2>&1
+yum install -y -q which net-tools sudo sshpass less
 
 # Hack required to provision K8s v1.15+ in LXC containers
 mknod /dev/kmsg c 1 11
@@ -75,7 +75,7 @@ then
 
   # Deploy flannel network
   echo "[TASK 11] Deploy flannel network"
-  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml > /dev/null 2>&1
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
   # Generate Cluster join command
   echo "[TASK 12] Generate and save cluster join command to /joincluster.sh"
