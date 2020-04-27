@@ -34,7 +34,7 @@ yum install -y -q kubeadm-1.17.1 kubelet-1.17.1 kubectl-1.17.1
 # Start and Enable kubelet service
 echo "[TASK 5] Enable and start kubelet service"
 systemctl enable kubelet
-echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/sysconfig/kubelet
+echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/sysconfig/kubelet # Add user-specified flags
 systemctl start kubelet
 
 # Install Openssh server
