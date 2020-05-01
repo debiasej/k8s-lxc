@@ -61,8 +61,7 @@ title "[TASK 6] Install and configure ssh"
 apt-get install -y ssh
 sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 systemctl enable sshd
-systemctl enable sshd
-systemctl start sshd
+systemctl restart sshd
 
 # Set Root password
 title "[TASK 7] Set root password"
