@@ -2,7 +2,7 @@
 
 ## Aux functions
 title () {
-  printf "\033[34m$*\033[0m\n"
+  printf "\033[1;34m$*\033[0;0m\n"
 }
 
 ## Install docker from Docker-ce repository
@@ -80,23 +80,22 @@ if [[ $(hostname) =~ .*master.* ]]
 then
 
   # Initialize Kubernetes
-  echo "[TASK 9] Initialize Kubernetes Cluster"
+  title "[TASK 9] Initialize Kubernetes Cluster"
   kubeadm init --pod-network-cidr=10.63.200.0/24 2>&1 | tee /root/kubeinit.log
 
   # Copy Kube admin config
-  echo "[TASK 10] Copy kube admin config to root user .kube directory"
+  title "[TASK 10] Copy kube admin config to root user .kube directory"
   mkdir /root/.kube
   cp /etc/kubernetes/admin.conf /root/.kube/config
 
   # Deploy flannel network
-  echo "[TASK 11] Deploy flannel network"
+  title "[TASK 11] Deploy flannel network"
   # For Kubernetes v1.7+
   #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
   # Generate Cluster join command
-  echo "[TASK 12] Generate and save cluster join command to /joincluster.sh"
+  title "[TASK 12] Generate and save cluster join command to /joincluster.sh"
   #echo $(kubeadm token create --print-join-command) > /join-worker-node.sh
 
 fi
-
 
