@@ -67,8 +67,36 @@ systemctl restart sshd
 title "[TASK 7] Set root password"
 echo "root:ubuntu" | sudo chpasswd
 
-# Install additional required packages
-title "[TASK 8] Install additional packages"
-#apt-get install sshpass
-#yum install -y -q which net-tools sudo sshpass less
+# Hack required to provision K8s v1.15+ in LXC containers
+#mknod /dev/kmsg c 1 11
+#chmod +x /etc/rc.d/rc.local
+#echo 'mknod /dev/kmsg c 1 11' >> /etc/rc.d/rc.local
+
+#######################################
+# To be executed only on master nodes #
+#######################################
+
+if [[ $(hostname) =~ .*master.* ]]
+then
+
+  # Initialize Kubernetes
+  echo "[TASK 9] Initialize Kubernetes Cluster"
+  kubeadm init --pod-network-cidr=10.63.200.0/24 2>&1 | tee /root/kubeinit.log
+
+  # Copy Kube admin config
+  echo "[TASK 10] Copy kube admin config to root user .kube directory"
+  mkdir /root/.kube
+  cp /etc/kubernetes/admin.conf /root/.kube/config
+
+  # Deploy flannel network
+  echo "[TASK 11] Deploy flannel network"
+  # For Kubernetes v1.7+
+  #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+  # Generate Cluster join command
+  echo "[TASK 12] Generate and save cluster join command to /joincluster.sh"
+  #echo $(kubeadm token create --print-join-command) > /join-worker-node.sh
+
+fi
+
 
