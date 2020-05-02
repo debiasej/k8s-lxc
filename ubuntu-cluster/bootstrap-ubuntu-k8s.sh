@@ -27,7 +27,8 @@ apt-get update && apt-get install -y \
 # Setup daemon.
 cat > /etc/docker/daemon.json <<EOF
 {
-  "exec-opts": ["native.cgroupdriver=systemd"]
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "storage-driver": "overlay2"
 }
 EOF
 
