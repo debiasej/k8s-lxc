@@ -49,13 +49,13 @@ EOF
 # Install Kubernetes
 title "[TASK 4] Install Kubernetes (kubeadm, kubelet and kubectl)"
 #apt-get update && apt-get install -y kubelet=1.18.2-00 kubeadm=1.18.2-00 kubectl=1.18.2-00
-apt-get update && apt-get install -y kubeadm-1.17.1 kubelet-1.17.1 kubectl-1.17.1
+apt-get update && apt-get install -y kubeadm=1.17.1-00 kubelet=1.17.1-00 kubectl=1.17.1-00
 apt-mark hold kubelet kubeadm kubectl
 
 # Start and Enable kubelet service
 title "[TASK 5] Enable and start kubelet service"
 systemctl enable kubelet
-sed -i "s/\$KUBELET_EXTRA_ARGS/\$KUBELET_EXTRA_ARGS\ --cgroup-driver=systemd/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#sed -i "s/\$KUBELET_EXTRA_ARGS/\$KUBELET_EXTRA_ARGS\ --cgroup-driver=systemd/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/default/kubelet # Add user-specified flags
 systemctl start kubelet
 
@@ -74,9 +74,9 @@ echo "root:ubuntu" | sudo chpasswd
 title "[TASK 8] Install additional packages"
 apt-get install -y linux-image-$(uname -r)
 # Hack required to provision K8s v1.15+ in LXC containers
-#mknod /dev/kmsg c 1 11
-#chmod +x /etc/rc.d/rc.local
-#echo 'mknod /dev/kmsg c 1 11' >> /etc/rc.d/rc.local
+mknod /dev/kmsg c 1 11
+chmod +x /etc/rc.local
+echo 'mknod /dev/kmsg c 1 11' >> /etc/rc.local
 
 #######################################
 # To be executed only on master nodes #
@@ -87,7 +87,7 @@ then
 
   # Initialize Kubernetes
   title "[TASK 9] Initialize Kubernetes Cluster"
-  kubeadm init --pod-network-cidr=10.63.200.0/24 2>&1 | tee /root/kubeinit.log
+  kubeadm init --pod-network-cidr=10.163.23.0/24 2>&1 | tee /root/kubeinit.log
 
   # Copy Kube admin config
   title "[TASK 10] Copy kube admin config to root user .kube directory"
