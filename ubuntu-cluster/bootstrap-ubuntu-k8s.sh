@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eo
 
 ## Aux functions
 title () {
@@ -55,8 +55,7 @@ apt-mark hold kubelet kubeadm kubectl
 # Start and Enable kubelet service
 title "[TASK 5] Enable and start kubelet service"
 systemctl enable kubelet
-#sed -i "s/\$KUBELET_EXTRA_ARGS/\$KUBELET_EXTRA_ARGS\ --cgroup-driver=systemd/g" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/default/kubelet # Add user-specified flags
+#echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/default/kubelet # Add user-specified flags
 systemctl start kubelet
 
 # Install Openssh server
@@ -72,8 +71,9 @@ echo "root:ubuntu" | sudo chpasswd
 
 # Install additional required packages
 title "[TASK 8] Install additional packages"
+# Update the kernel image
 apt-get install -y linux-image-$(uname -r)
-# Hack required to provision K8s v1.15+ in LXC containers
+# Hack required to provision K8s v1.15+ in LXC containers. The container should be privileged.
 mknod /dev/kmsg c 1 11
 chmod +x /etc/rc.local
 echo 'mknod /dev/kmsg c 1 11' >> /etc/rc.local
@@ -97,11 +97,11 @@ then
   # Deploy flannel network
   title "[TASK 11] Deploy flannel network"
   # For Kubernetes v1.7+
-  #kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
   # Generate Cluster join command
   title "[TASK 12] Generate and save cluster join command to /joincluster.sh"
-  #echo $(kubeadm token create --print-join-command) > /join-worker-node.sh
+  echo $(kubeadm token create --print-join-command) > /join-worker-node.sh
 
 fi
 
