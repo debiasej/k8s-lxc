@@ -52,31 +52,33 @@ title "[TASK 4] Install Kubernetes (kubeadm, kubelet and kubectl)"
 apt-get update && apt-get install -y kubeadm=1.17.1-00 kubelet=1.17.1-00 kubectl=1.17.1-00
 apt-mark hold kubelet kubeadm kubectl
 
+# Install additional required packages
+title "[TASK 5] Install additional packages"
+# Update the kernel image
+apt-get install -y linux-image-$(uname -r)
+# Hack required to provision K8s v1.15+ in LXC containers. The container should be privileged.
+mknod /dev/kmsg c 1 11
+
 # Start and Enable kubelet service
-title "[TASK 5] Enable and start kubelet service"
+title "[TASK 6] Enable and start kubelet service"
 systemctl enable kubelet
-#echo 'KUBELET_EXTRA_ARGS="--fail-swap-on=false"' > /etc/default/kubelet # Add user-specified flags
-systemctl start kubelet
+# Add user-specified flags
+#echo 'KUBELET_EXTRA_ARGS="--runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"' > /etc/default/kubelet
+# Make hack permanent adding a ExecStartPre directive
+sed -i "s/EnvironmentFile=-\/etc\/default\/kubelet/&\nExecStartPre=[ \-f \"\/dev\/kmsg\" ] \|\| \/bin\/sh \-c 'mknod \/dev\/kmsg c 1 11'/" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+systemctl daemon-reload
+systemctl restart kubelet
 
 # Install Openssh server
-title "[TASK 6] Install and configure ssh"
+title "[TASK 7] Install and configure ssh"
 apt-get install -y ssh
 sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 systemctl enable sshd
 systemctl restart sshd
 
 # Set Root password
-title "[TASK 7] Set root password"
+title "[TASK 8] Set root password"
 echo "root:ubuntu" | sudo chpasswd
-
-# Install additional required packages
-title "[TASK 8] Install additional packages"
-# Update the kernel image
-apt-get install -y linux-image-$(uname -r)
-# Hack required to provision K8s v1.15+ in LXC containers. The container should be privileged.
-mknod /dev/kmsg c 1 11
-chmod +x /etc/rc.local
-echo 'mknod /dev/kmsg c 1 11' >> /etc/rc.local
 
 #######################################
 # To be executed only on master nodes #
