@@ -63,9 +63,10 @@ mknod /dev/kmsg c 1 11
 title "[TASK 6] Enable and start kubelet service"
 systemctl enable kubelet
 # Add user-specified flags
-#echo 'KUBELET_EXTRA_ARGS="--runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"' > /etc/default/kubelet
+echo 'KUBELET_EXTRA_ARGS="--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"' > /etc/default/kubelet
 # Make hack permanent adding a ExecStartPre directive
-sed -i "s/EnvironmentFile=-\/etc\/default\/kubelet/&\nExecStartPre=[ \-f \"\/dev\/kmsg\" ] \|\| \/bin\/sh \-c 'mknod \/dev\/kmsg c 1 11'/" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+#sed -i "s/EnvironmentFile=-\/etc\/default\/kubelet/&\nExecStartPre=[ \-f \"\/dev\/kmsg\" ] \|\| \/bin\/sh \-c 'mknod \/dev\/kmsg c 1 11'/" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sed -i 's/ExecStart=\//ExecStart=\/bin\/sh \-c ([ \-c "\/dev\/kmsg\" ] \|\| mknod \/dev\/kmsg c 1 11) \&\& /' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 systemctl daemon-reload
 systemctl restart kubelet
 
