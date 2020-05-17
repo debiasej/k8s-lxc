@@ -116,12 +116,11 @@ if [[ $(hostname) =~ .*worker.* ]]
 then
 
   # Join worker nodes to the Kubernetes cluster
-  echo "[TASK 9] Join node to Kubernetes Cluster"
+  title "[TASK 9] Join node to Kubernetes Cluster"
   # Copy joincluster script ignoring SSH Host Key Verification
   read -p "Enter the master node name: " NODE_NAME
   sshpass -p "ubuntu" scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $NODE_NAME.lxd:/join-worker-node.sh /join-worker-node.sh 2>/tmp/join-worker-node.log
   bash /join-worker-node.sh >> /tmp/join-worker-node.log 2>&1
 
 fi
-
 
