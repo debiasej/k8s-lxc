@@ -55,7 +55,7 @@ apt-mark hold kubelet kubeadm kubectl
 # Install additional required packages
 title "[TASK 5] Install additional packages"
 # Update the kernel image
-apt-get install -y linux-image-$(uname -r)
+apt-get install -y linux-image-$(uname -r) sshpass
 # Hack required to provision K8s v1.15+ in LXC containers. The container should be privileged.
 mknod /dev/kmsg c 1 11
 
@@ -107,4 +107,21 @@ then
   echo $(kubeadm token create --print-join-command) > /join-worker-node.sh
 
 fi
+
+#######################################
+# To be executed only on worker nodes #
+#######################################
+
+if [[ $(hostname) =~ .*worker.* ]]
+then
+
+  # Join worker nodes to the Kubernetes cluster
+  echo "[TASK 9] Join node to Kubernetes Cluster"
+  # Copy joincluster script ignoring SSH Host Key Verification
+  read -p "Enter the master node name: " NODE_NAME
+  sshpass -p "ubuntu" scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $NODE_NAME.lxd:/join-worker-node.sh /join-worker-node.sh 2>/tmp/join-worker-node.log
+  bash /join-worker-node.sh >> /tmp/join-worker-node.log 2>&1
+
+fi
+
 
