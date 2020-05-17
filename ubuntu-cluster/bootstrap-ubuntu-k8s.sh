@@ -65,8 +65,6 @@ systemctl enable kubelet
 # Add user-specified flags
 echo 'KUBELET_EXTRA_ARGS="--cgroup-driver=systemd --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"' > /etc/default/kubelet
 # Make hack permanent adding a ExecStartPre directive
-#sed -i "s/EnvironmentFile=-\/etc\/default\/kubelet/&\nExecStartPre=[ \-f \"\/dev\/kmsg\" ] \|\| \/bin\/sh \-c 'mknod \/dev\/kmsg c 1 11'/" /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-#sed -i 's/ExecStart=\//ExecStart=\/bin\/sh \-c ([ \-c "\/dev\/kmsg\" ] \|\| mknod \/dev\/kmsg c 1 11) \&\& /' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 sed -i 's/exit 0//' /etc/rc.local
 echo $'mknod /dev/kmsg c 1 11\nexit0' >> /etc/rc.local
 systemctl daemon-reload
@@ -92,7 +90,7 @@ then
 
   # Initialize Kubernetes
   title "[TASK 9] Initialize Kubernetes Cluster"
-  kubeadm init --pod-network-cidr=10.163.23.0/24 2>&1 | tee /root/kubeinit.log
+  kubeadm init --pod-network-cidr=10.244.0.0/16 2>&1 | tee /root/kubeinit.log
 
   # Copy Kube admin config
   title "[TASK 10] Copy kube admin config to root user .kube directory"
