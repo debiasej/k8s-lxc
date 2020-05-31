@@ -11,7 +11,7 @@ title () {
 
 ## Install Docker, Kubernetes and additional packages
 apt-get update && apt-get install -y wget
-wget -qO - https://raw.githubusercontent.com/debiasej/k8s-lxc/bootstraping-ubuntu-base/ubuntu-cluster/ubuntu-k8s-base.sh | bash
+wget -qO - https://raw.githubusercontent.com/debiasej/k8s-lxc/master/ubuntu-cluster/ubuntu-k8s-base.sh | bash
 
 #######################################
 # To be executed only on master nodes #
