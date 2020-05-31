@@ -73,8 +73,8 @@ systemctl restart kubelet
 printf "\033[1;34m[TASK 7] Install and configure ssh\033[0;0m\n"
 apt-get install -y ssh
 sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-systemctl enable sshd
-systemctl restart sshd
+systemctl enable ssh
+systemctl restart ssh
 
 # Set Root password
 printf "\033[1;34m[TASK 8] Set root password\033[0;0m\n"
